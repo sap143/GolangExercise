@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+
+	"example.com/greetings"
 )
 
 func main() {
-	fmt.Println(morestring.ReverseRunes("!oG ,olleH"))
+	message := greetings.Hello("Salman")
+	fmt.Println(message)
 }
