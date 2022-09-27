@@ -8,8 +8,10 @@ import (
 )
 
 func main() {
-	message, err := greetings.Hello("Salman")
+	names := []string{"salman", "arun", "sunil", "preeti"}
+	// message, err := greetings.Hello("Salman")
 	// message, err := greetings.Hello("")
+	message, err := greetings.Hellos(names)
 	if err != nil {
 		log.Fatal(err)
 	}
