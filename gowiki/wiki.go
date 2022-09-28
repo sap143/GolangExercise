@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"text/template"
 )
 
 type Page struct {
@@ -29,8 +29,41 @@ func Loadpage(title string) (*Page, error) {
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
-	p, _ := Loadpage(title)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+	p, err := Loadpage(title)
+	if err != nil {
+		http.Redirect(w, r, "/edit/"+title, http.StatusFound)
+		return
+	}
+	t, _ := template.ParseFiles("view.html")
+	// fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+	t.Execute(w, p)
+}
+
+func editHandler(w http.ResponseWriter, r *http.Request) {
+
+	title := r.URL.Path[len("/edit/"):]
+	p, err := Loadpage(title)
+	if err != nil {
+		p = &Page{Title: title}
+	}
+	// fmt.Fprintf(w, "<h1>Editing %s</h1>"+
+	// 	"<form action=\"/save/%s\" method=\"POST\">"+
+	// 	"<textarea name=\"body\">%s</textarea><br>"+
+	// 	"<input type=\"submit\" value=\"Save\">"+
+	// 	"</form>",
+	// 	p.Title, p.Title, p.Body)
+	t, _ := template.ParseFiles("edit.html")
+	t.Execute(w, p)
+
+}
+
+func saveHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/save/"):]
+	body := r.FormValue("body")
+	// fmt.Print(body)
+	p := &Page{Title: title, Body: []byte(body)}
+	p.save()
+	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 
 }
 
@@ -40,5 +73,7 @@ func main() {
 	// p2, _ := loadpage("TestPage")
 	// fmt.Println(string(p2.Body))
 	http.HandleFunc("/view/", viewHandler)
+	http.HandleFunc("/edit/", editHandler)
+	http.HandleFunc("/save/", saveHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
