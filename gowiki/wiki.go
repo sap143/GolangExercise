@@ -27,18 +27,18 @@ func Loadpage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 
-// func viewHandler(w http.ResponseWriter, r *http.Request) {
-// 	title := r.URL.Path[len("/view/"):]
-// 	p, _ := Loadpage(title)
-// 	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+func viewHandler(w http.ResponseWriter, r *http.Request) {
+	title := r.URL.Path[len("/view/"):]
+	p, _ := Loadpage(title)
+	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
 
-// }
+}
 
 func main() {
-	p1 := &Page{Title: "TestPage", Body: []byte("This is a sample page.")}
-	p1.save()
-	p2, _ := loadpage("TestPage")
-	fmt.Println(string(p2.Body))
-// 	http.HandleFunc("/view/", viewHandler)
-// 	log.Fatal(http.ListenAndServe(":8080", nil))
-// }
+	// p1 := &Page{Title: "TestPage", Body: []byte("This is a sample page.")}
+	// p1.save()
+	// p2, _ := loadpage("TestPage")
+	// fmt.Println(string(p2.Body))
+	http.HandleFunc("/view/", viewHandler)
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
